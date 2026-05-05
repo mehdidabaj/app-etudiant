@@ -1,42 +1,21 @@
 @startuml
-title App_Etudiants - Diagramme de classe conceptuel
+title Classe conceptuel - Gestion des etudiants
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 
-class Etudiant <<concept>> {
-  idEtudiant : Integer
-  nomEtudiant : String
-  prenomEtudiant : String
-  niveau : String
-  --
-  nomComplet
+class Etudiant {
+  id
+  nom
+  prenom
+  niveau
 }
 
-class Filiere <<concept>> {
-  idFiliere : Integer
-  nomFiliere : String
+class Filiere {
+  id
+  nom
 }
 
-class Niveau <<valeur>> {
-  Licence 1
-  Licence 2
-  Licence 3
-  Master 1
-  Master 2
-}
-
-Filiere "1" -- "0..*" Etudiant : regroupe >
-Etudiant "0..*" -- "1" Filiere : appartient a >
-Etudiant "1" -- "1" Niveau : suit >
-
-note right of Etudiant
-  Un etudiant possede une identite,
-  un niveau d'etude et une filiere.
-end note
-
-note bottom of Filiere
-  Une filiere peut contenir plusieurs etudiants.
-end note
+Filiere "1" -- "0..*" Etudiant : contient
 
 @enduml

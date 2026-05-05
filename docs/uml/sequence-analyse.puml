@@ -2,33 +2,22 @@
 title Diagramme de sequence d'analyse - Ajouter un etudiant
 
 actor "Utilisateur" as User
-boundary "Page etudiants/form.jsp" as Form
 control "EtudiantServlet" as Servlet
 entity "FiliereRepository" as FiliereRepo
 entity "EtudiantRepository" as EtudiantRepo
 database "MySQL\ndb_etudiants" as DB
 
-User -> Form : saisir nom, prenom,\nniveau, filiere
 User -> Servlet : POST /etudiants/add
 activate Servlet
 
-Servlet -> Servlet : lire parametres HTTP
+Servlet -> Servlet : Lire les donnees du formulaire
 Servlet -> FiliereRepo : findById(filiereId)
-activate FiliereRepo
-FiliereRepo -> DB : SELECT Filiere par id
-DB --> FiliereRepo : filiere
 FiliereRepo --> Servlet : Filiere
-deactivate FiliereRepo
 
-Servlet -> Servlet : new Etudiant(nom, prenom,\nniveau, filiere)
+Servlet -> Servlet : Creer Etudiant
 Servlet -> EtudiantRepo : save(etudiant)
-activate EtudiantRepo
-EtudiantRepo -> DB : BEGIN transaction
 EtudiantRepo -> DB : INSERT etudiant
-EtudiantRepo -> DB : COMMIT
-DB --> EtudiantRepo : etudiant persiste
 EtudiantRepo --> Servlet : Etudiant
-deactivate EtudiantRepo
 
 Servlet --> User : redirection /etudiants
 deactivate Servlet

@@ -1,73 +1,25 @@
 @startuml
 title Diagramme de cas d'utilisation - Gestion des etudiants
 left to right direction
-skinparam packageStyle rectangle
+skinparam shadowing false
 
 actor "Utilisateur" as Utilisateur
-actor "SGBD MySQL" as MySQL
 
 rectangle "Application Gestion Universite" {
   usecase "Consulter le\ntableau de bord" as UC_Dashboard
-
-  package "Gestion des etudiants" {
-    usecase "Gerer les etudiants" as UC_GererEtudiants
-    usecase "Consulter la liste\ndes etudiants" as UC_ListerEtudiants
-    usecase "Rechercher des\netudiants" as UC_RechercherEtudiants
-    usecase "Ajouter un\netudiant" as UC_AjouterEtudiant
-    usecase "Modifier un\netudiant" as UC_ModifierEtudiant
-    usecase "Supprimer un\netudiant" as UC_SupprimerEtudiant
-    usecase "Choisir une\nfiliere" as UC_ChoisirFiliere
-  }
-
-  package "Gestion des filieres" {
-    usecase "Gerer les filieres" as UC_GererFilieres
-    usecase "Consulter la liste\ndes filieres" as UC_ListerFilieres
-    usecase "Ajouter une\nfiliere" as UC_AjouterFiliere
-    usecase "Modifier une\nfiliere" as UC_ModifierFiliere
-    usecase "Supprimer une\nfiliere" as UC_SupprimerFiliere
-  }
-
-  usecase "Lire les donnees" as UC_LireDonnees
-  usecase "Enregistrer les\nchangements" as UC_Enregistrer
+  usecase "Gerer les\netudiants" as UC_Etudiants
+  usecase "Rechercher un\netudiant" as UC_Recherche
+  usecase "Gerer les\nfilieres" as UC_Filieres
 }
 
 Utilisateur --> UC_Dashboard
-Utilisateur --> UC_GererEtudiants
-Utilisateur --> UC_GererFilieres
+Utilisateur --> UC_Etudiants
+Utilisateur --> UC_Recherche
+Utilisateur --> UC_Filieres
 
-UC_GererEtudiants ..> UC_ListerEtudiants : <<include>>
-UC_GererEtudiants ..> UC_RechercherEtudiants : <<extend>>
-UC_GererEtudiants ..> UC_AjouterEtudiant : <<extend>>
-UC_GererEtudiants ..> UC_ModifierEtudiant : <<extend>>
-UC_GererEtudiants ..> UC_SupprimerEtudiant : <<extend>>
-
-UC_AjouterEtudiant ..> UC_ChoisirFiliere : <<include>>
-UC_ModifierEtudiant ..> UC_ChoisirFiliere : <<include>>
-
-UC_GererFilieres ..> UC_ListerFilieres : <<include>>
-UC_GererFilieres ..> UC_AjouterFiliere : <<extend>>
-UC_GererFilieres ..> UC_ModifierFiliere : <<extend>>
-UC_GererFilieres ..> UC_SupprimerFiliere : <<extend>>
-
-UC_Dashboard ..> UC_LireDonnees : <<include>>
-UC_ListerEtudiants ..> UC_LireDonnees : <<include>>
-UC_RechercherEtudiants ..> UC_LireDonnees : <<include>>
-UC_ListerFilieres ..> UC_LireDonnees : <<include>>
-UC_ChoisirFiliere ..> UC_LireDonnees : <<include>>
-
-UC_AjouterEtudiant ..> UC_Enregistrer : <<include>>
-UC_ModifierEtudiant ..> UC_Enregistrer : <<include>>
-UC_SupprimerEtudiant ..> UC_Enregistrer : <<include>>
-UC_AjouterFiliere ..> UC_Enregistrer : <<include>>
-UC_ModifierFiliere ..> UC_Enregistrer : <<include>>
-UC_SupprimerFiliere ..> UC_Enregistrer : <<include>>
-
-MySQL <-- UC_LireDonnees
-MySQL <-- UC_Enregistrer
-
-note right of UC_RechercherEtudiants
-  Criteres pris en charge :
-  nom, filiere et niveau.
+note bottom of UC_Etudiants
+  Ajouter, modifier,
+  supprimer et lister.
 end note
 
 @enduml

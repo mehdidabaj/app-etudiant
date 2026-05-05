@@ -10,12 +10,14 @@ Ce dossier contient les diagrammes UML derives du projet Java `App_Etudiants`.
 - `sequence-conceptuel.puml` : sequence conceptuelle du cas "creer un etudiant".
 - `sequence-analyse.puml` : sequence d'analyse du cas "ajouter un etudiant" dans l'architecture Servlet/JPA.
 
+Les images generees correspondantes sont disponibles dans `docs/uml/images/`.
+
 ## Generation
 
 Les fichiers sont au format PlantUML. Pour generer les images :
 
 ```bash
-plantuml docs/uml/*.puml
+plantuml -tpng -o images docs/uml/*.puml
 ```
 
 Les diagrammes se basent sur les classes Java suivantes :
