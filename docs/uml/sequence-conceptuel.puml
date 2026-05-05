@@ -1,60 +1,34 @@
 @startuml
-title Sequence conceptuelle - CRUD etudiants et filieres
+title Sequence conceptuelle simple - CRUD Etudiant
 
 skinparam shadowing false
 skinparam sequenceMessageAlign center
-skinparam ParticipantPadding 25
-skinparam BoxPadding 10
 
-actor "Utilisateur" as Utilisateur
-participant "Application Gestion Universite" as Systeme
-participant "Registre des etudiants" as Registre
-participant "Catalogue des filieres" as Catalogue
+actor "Utilisateur" as U
+participant "Application" as App
+participant "Etudiants" as E
+participant "Filieres" as F
 
-== CRUD etudiants ==
-Utilisateur -> Systeme : Consulter les etudiants
-Systeme -> Registre : Lister les etudiants
-Registre --> Systeme : Liste des etudiants
-Systeme -> Catalogue : Lister les filieres
-Catalogue --> Systeme : Liste des filieres
-Systeme --> Utilisateur : Afficher la liste
+U -> App : Consulter la liste
+App -> E : lister()
+E --> App : etudiants
+App --> U : afficher liste
 
-Utilisateur -> Systeme : Ajouter un etudiant\n(nom, prenom, niveau, filiere)
-Systeme -> Catalogue : Verifier la filiere choisie
-Catalogue --> Systeme : Filiere
-Systeme -> Registre : Creer l'etudiant
-Registre --> Systeme : Etudiant cree
-Systeme --> Utilisateur : Afficher la liste mise a jour
+U -> App : Ajouter etudiant\n(nom, prenom, niveau, filiere)
+App -> F : verifier filiere
+F --> App : filiere
+App -> E : creer(etudiant)
+E --> App : etudiant cree
+App --> U : liste mise a jour
 
-Utilisateur -> Systeme : Modifier un etudiant
-Systeme -> Registre : Mettre a jour les informations
-Registre --> Systeme : Etudiant modifie
-Systeme --> Utilisateur : Confirmer la modification
+U -> App : Modifier etudiant
+App -> E : modifier(etudiant)
+E --> App : etudiant modifie
+App --> U : confirmation
 
-Utilisateur -> Systeme : Supprimer un etudiant
-Systeme -> Registre : Supprimer l'etudiant
-Registre --> Systeme : Suppression confirmee
-Systeme --> Utilisateur : Afficher la liste mise a jour
-
-== CRUD filieres ==
-Utilisateur -> Systeme : Consulter les filieres
-Systeme -> Catalogue : Lister les filieres
-Catalogue --> Systeme : Liste des filieres
-Systeme --> Utilisateur : Afficher la liste
-
-Utilisateur -> Systeme : Ajouter une filiere
-Systeme -> Catalogue : Creer la filiere
-Catalogue --> Systeme : Filiere creee
-Systeme --> Utilisateur : Afficher la liste mise a jour
-
-Utilisateur -> Systeme : Modifier une filiere
-Systeme -> Catalogue : Mettre a jour la filiere
-Catalogue --> Systeme : Filiere modifiee
-Systeme --> Utilisateur : Confirmer la modification
-
-Utilisateur -> Systeme : Supprimer une filiere
-Systeme -> Catalogue : Supprimer la filiere
-Catalogue --> Systeme : Suppression confirmee
-Systeme --> Utilisateur : Afficher la liste mise a jour
+U -> App : Supprimer etudiant
+App -> E : supprimer(id)
+E --> App : suppression OK
+App --> U : liste mise a jour
 
 @enduml

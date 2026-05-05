@@ -1,19 +1,17 @@
 # Diagrammes UML - App_Etudiants
 
 Ce dossier contient les diagrammes UML derives du projet Java `App_Etudiants`.
-Le perimetre presente uniquement deux modules :
-
-- gestion des etudiants en CRUD ;
-- gestion des filieres en CRUD.
+Le perimetre presente une seule fonctionnalite principale : le CRUD etudiant.
+La filiere est conservee uniquement comme information rattachee a un etudiant.
 
 ## Fichiers source PlantUML
 
-- `use-case.puml` : cas d'utilisation CRUD des etudiants et des filieres.
-- `classe-conceptuel.puml` : concepts metier Etudiant, Filiere et Niveau.
-- `classe-analyse.puml` : presentation, controleurs, entites, repositories et base MySQL limites au CRUD.
-- `classe-technique.puml` : diagramme de classe technique limite a une seule fonctionnalite, le CRUD etudiant.
-- `sequence-conceptuel.puml` : sequence conceptuelle d'un cycle CRUD.
-- `sequence-analyse.puml` : sequence d'analyse du CRUD etudiant dans l'architecture Servlet/JPA.
+- `use-case.puml` : cas d'utilisation du CRUD etudiant.
+- `classe-conceptuel.puml` : concepts metier utiles au CRUD etudiant.
+- `classe-analyse.puml` : boundary, control, entity et persistence du CRUD etudiant.
+- `classe-technique.puml` : diagramme technique simplifie du CRUD etudiant.
+- `sequence-conceptuel.puml` : vue conceptuelle du cycle CRUD etudiant.
+- `sequence-analyse.puml` : sequence d'analyse simplifiee du CRUD etudiant.
 
 ## Images generees
 
@@ -39,7 +37,6 @@ Les diagrammes se basent sur les classes Java suivantes :
 - `entities.Etudiant`
 - `entities.Filiere`
 - `servlets.EtudiantServlet`
-- `servlets.FiliereServlet`
 - `repositories.Repository`
 - `repositories.EtudiantRepository`
 - `repositories.FiliereRepository`

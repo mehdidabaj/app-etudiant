@@ -1,13 +1,8 @@
 @startuml
-title Diagramme de classe conceptuel - CRUD Etudiants et Filieres
+title Classe conceptuelle - CRUD Etudiant
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false
-skinparam class {
-  BackgroundColor #F8FBFF
-  BorderColor #2F5597
-  ArrowColor #2F5597
-}
 
 class Etudiant <<concept>> {
   identifiant
@@ -22,34 +17,15 @@ class Filiere <<concept>> {
 }
 
 class "CRUD Etudiant" as CrudEtudiant <<processus>> {
-  creer etudiant
-  consulter etudiants
-  modifier etudiant
-  supprimer etudiant
+  lister
+  ajouter
+  modifier
+  supprimer
 }
 
-class "CRUD Filiere" as CrudFiliere <<processus>> {
-  creer filiere
-  consulter filieres
-  modifier filiere
-  supprimer filiere
-}
-
-Filiere "1" -- "0..*" Etudiant : contient
-Etudiant "0..*" -- "1" Filiere : appartient a
-
-CrudEtudiant ..> Etudiant : manipule
-CrudEtudiant ..> Filiere : selectionne
-CrudFiliere ..> Filiere : manipule
-
-note right of Etudiant
-  Informations gerees :
-  nom, prenom, niveau et filiere.
-end note
-
-note bottom of Filiere
-  Une filiere peut etre creee,
-  consultee, modifiee ou supprimee.
-end note
+CrudEtudiant ..> Etudiant : gere
+CrudEtudiant ..> Filiere : choisit
+Filiere "1" -- "0..*" Etudiant : regroupe
+Etudiant "0..*" --> "1" Filiere : appartient a
 
 @enduml

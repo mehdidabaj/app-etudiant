@@ -1,5 +1,5 @@
 @startuml
-title Sequence d'analyse - CRUD etudiants et filieres
+title Sequence d'analyse simplifiee - CRUD Etudiant
 
 skinparam shadowing false
 skinparam sequenceMessageAlign center
@@ -7,98 +7,45 @@ skinparam ParticipantPadding 16
 
 actor "Utilisateur" as User
 boundary "Navigateur" as Browser
-control "EtudiantServlet" as EtudiantServlet
-control "FiliereServlet" as FiliereServlet
+control "EtudiantServlet" as Servlet
 entity "EtudiantRepository" as EtudiantRepo
 entity "FiliereRepository" as FiliereRepo
-collections "Etudiant" as Etudiant
-collections "Filiere" as Filiere
-database "MySQL\n(db_etudiants)" as DB
+database "MySQL" as DB
 
-== CRUD Etudiants ==
+== Lister ==
 User -> Browser : ouvrir /etudiants
-Browser -> EtudiantServlet : GET /etudiants
-activate EtudiantServlet
-EtudiantServlet -> EtudiantRepo : findAll()
-EtudiantRepo -> DB : SELECT * FROM etudiant
-DB --> EtudiantRepo : liste etudiants
-EtudiantRepo --> EtudiantServlet : List<Etudiant>
-EtudiantServlet -> FiliereRepo : findAll()
-FiliereRepo -> DB : SELECT * FROM filiere
-DB --> FiliereRepo : liste filieres
-FiliereRepo --> EtudiantServlet : List<Filiere>
-EtudiantServlet --> Browser : forward etudiants/list.jsp
-deactivate EtudiantServlet
+Browser -> Servlet : GET /etudiants
+Servlet -> EtudiantRepo : findAll()
+EtudiantRepo -> DB : SELECT etudiants
+DB --> EtudiantRepo : etudiants
+Servlet -> FiliereRepo : findAll()
+FiliereRepo -> DB : SELECT filieres
+DB --> FiliereRepo : filieres
+Servlet --> Browser : etudiants/list.jsp
 
-User -> Browser : ajouter etudiant
-Browser -> EtudiantServlet : POST /etudiants/add
-activate EtudiantServlet
-EtudiantServlet -> FiliereRepo : findById(filiereId)
-FiliereRepo --> EtudiantServlet : Filiere
-EtudiantServlet -> Etudiant : new Etudiant(...)
-EtudiantServlet -> EtudiantRepo : save(etudiant)
+== Ajouter ==
+User -> Browser : saisir un etudiant
+Browser -> Servlet : POST /etudiants/add
+Servlet -> FiliereRepo : findById(filiereId)
+FiliereRepo --> Servlet : Filiere
+Servlet -> EtudiantRepo : save(etudiant)
 EtudiantRepo -> DB : INSERT etudiant
-EtudiantServlet --> Browser : redirect /etudiants
-deactivate EtudiantServlet
+Servlet --> Browser : redirect /etudiants
 
-User -> Browser : modifier etudiant
-Browser -> EtudiantServlet : POST /etudiants/edit
-activate EtudiantServlet
-EtudiantServlet -> EtudiantRepo : findById(id)
-EtudiantRepo --> EtudiantServlet : Etudiant
-EtudiantServlet -> FiliereRepo : findById(filiereId)
-FiliereRepo --> EtudiantServlet : Filiere
-EtudiantServlet -> Etudiant : setNom, setPrenom,\nsetNiveau, setFiliere
-EtudiantServlet -> EtudiantRepo : update(etudiant)
+== Modifier ==
+User -> Browser : modifier un etudiant
+Browser -> Servlet : POST /etudiants/edit
+Servlet -> EtudiantRepo : findById(id)
+Servlet -> FiliereRepo : findById(filiereId)
+Servlet -> EtudiantRepo : update(etudiant)
 EtudiantRepo -> DB : UPDATE etudiant
-EtudiantServlet --> Browser : redirect /etudiants
-deactivate EtudiantServlet
+Servlet --> Browser : redirect /etudiants
 
-User -> Browser : supprimer etudiant
-Browser -> EtudiantServlet : GET /etudiants/delete?id=...
-activate EtudiantServlet
-EtudiantServlet -> EtudiantRepo : delete(id)
+== Supprimer ==
+User -> Browser : supprimer un etudiant
+Browser -> Servlet : GET /etudiants/delete?id=...
+Servlet -> EtudiantRepo : delete(id)
 EtudiantRepo -> DB : DELETE etudiant
-EtudiantServlet --> Browser : redirect /etudiants
-deactivate EtudiantServlet
-
-== CRUD Filieres ==
-User -> Browser : ouvrir /filieres
-Browser -> FiliereServlet : GET /filieres
-activate FiliereServlet
-FiliereServlet -> FiliereRepo : findAll()
-FiliereRepo -> DB : SELECT * FROM filiere
-DB --> FiliereRepo : liste filieres
-FiliereRepo --> FiliereServlet : List<Filiere>
-FiliereServlet --> Browser : forward filieres/list.jsp
-deactivate FiliereServlet
-
-User -> Browser : ajouter filiere
-Browser -> FiliereServlet : POST /filieres/add
-activate FiliereServlet
-FiliereServlet -> Filiere : new Filiere(nom)
-FiliereServlet -> FiliereRepo : save(filiere)
-FiliereRepo -> DB : INSERT filiere
-FiliereServlet --> Browser : redirect /filieres
-deactivate FiliereServlet
-
-User -> Browser : modifier filiere
-Browser -> FiliereServlet : POST /filieres/edit
-activate FiliereServlet
-FiliereServlet -> FiliereRepo : findById(id)
-FiliereRepo --> FiliereServlet : Filiere
-FiliereServlet -> Filiere : setNomFiliere(nom)
-FiliereServlet -> FiliereRepo : update(filiere)
-FiliereRepo -> DB : UPDATE filiere
-FiliereServlet --> Browser : redirect /filieres
-deactivate FiliereServlet
-
-User -> Browser : supprimer filiere
-Browser -> FiliereServlet : GET /filieres/delete?id=...
-activate FiliereServlet
-FiliereServlet -> FiliereRepo : delete(id)
-FiliereRepo -> DB : DELETE filiere
-FiliereServlet --> Browser : redirect /filieres
-deactivate FiliereServlet
+Servlet --> Browser : redirect /etudiants
 
 @enduml

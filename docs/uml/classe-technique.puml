@@ -1,141 +1,68 @@
 @startuml
-title Diagramme de classe technique - Fonctionnalite CRUD Etudiant
+title Classe technique simplifiee - CRUD Etudiant
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false
-skinparam packageStyle rectangle
 left to right direction
 
-package "IHM / Boundary" {
-  class "Navigateur" as Browser <<boundary>>
-  class "etudiants/list.jsp" as EtudiantListJsp <<boundary>>
-  class "etudiants/form.jsp" as EtudiantFormJsp <<boundary>>
+class "Pages JSP\n<<boundary>>" as JSP {
+  etudiants/list.jsp
+  etudiants/form.jsp
 }
 
-package "Controleur" {
-  class EtudiantServlet <<control>> {
-    - etudiantRepository : EtudiantRepository
-    - filiereRepository : FiliereRepository
-    --
-    + doGet(request, response) : void
-    + doPost(request, response) : void
-    - listEtudiants(request, response) : void
-    - showAddForm(request, response) : void
-    - showEditForm(request, response) : void
-    - addEtudiant(request, response) : void
-    - updateEtudiant(request, response) : void
-    - deleteEtudiant(request, response) : void
-    + destroy() : void
-  }
+class EtudiantServlet <<control>> {
+  + lister()
+  + ajouter()
+  + modifier()
+  + supprimer()
 }
 
-package "Entites JPA" {
-  class Etudiant <<entity>> {
-    - idEtudiant : Integer
-    - nomEtudiant : String
-    - prenomEtudiant : String
-    - niveau : String
-    - filiere : Filiere
-    --
-    + Etudiant()
-    + Etudiant(nomEtudiant, prenomEtudiant, niveau, filiere)
-    + getNomComplet() : String
-    + getters / setters
-  }
-
-  class Filiere <<entity>> {
-    - idFiliere : Integer
-    - nomFiliere : String
-    - etudiants : List<Etudiant>
-    --
-    + Filiere()
-    + Filiere(nomFiliere)
-    + getters / setters
-  }
+class Etudiant <<entity>> {
+  idEtudiant : Integer
+  nomEtudiant : String
+  prenomEtudiant : String
+  niveau : String
 }
 
-package "Repositories / Acces donnees" {
-  abstract class "Repository<T, ID>" as Repository <<abstract>> {
-    # emf : EntityManagerFactory
-    # entityClass : Class<T>
-    --
-    # getEntityManager() : EntityManager
-    + save(entity : T) : T
-    + findById(id : ID) : T
-    + findAll() : List<T>
-    + update(entity : T) : T
-    + delete(id : ID) : void
-    + close() : void
-  }
-
-  class EtudiantRepository <<repository>>
-  class FiliereRepository <<repository>>
+class Filiere <<entity>> {
+  idFiliere : Integer
+  nomFiliere : String
 }
 
-package "Interfaces et classes techniques" {
-  interface Servlet
-  interface Serializable
-
-  class HttpServlet <<framework>>
-  class HttpServletRequest <<framework>>
-  class HttpServletResponse <<framework>>
-  class RequestDispatcher <<framework>>
-
-  class EntityManagerFactory <<JPA>>
-  class EntityManager <<JPA>>
-  class EntityTransaction <<JPA>>
-  class Query <<JPA>>
-  class "MySQL\ndb_etudiants" as DB <<database>>
+abstract class "Repository<T, ID>" as Repository {
+  + save(entity)
+  + findById(id)
+  + findAll()
+  + update(entity)
+  + delete(id)
 }
 
-' Heritages
+class EtudiantRepository
+class FiliereRepository
+class HttpServlet
+interface Servlet
+class "JPA / EntityManager" as JPA
+class "MySQL" as DB <<database>>
+
 EtudiantServlet --|> HttpServlet
+HttpServlet ..|> Servlet
 EtudiantRepository --|> Repository
 FiliereRepository --|> Repository
 
-' Implementation d'interfaces techniques
-HttpServlet ..|> Servlet
-HttpServlet ..|> Serializable
+JSP --> EtudiantServlet : actions CRUD
+EtudiantServlet --> EtudiantRepository : CRUD etudiant
+EtudiantServlet --> FiliereRepository : choisir filiere
+EtudiantRepository ..> Etudiant
+FiliereRepository ..> Filiere
+Etudiant --> Filiere : appartient a
+Repository --> JPA
+JPA --> DB
 
-' Associations navigables IHM -> controleur
-Browser --> EtudiantServlet : GET/POST\n/etudiants/*
-
-' Associations navigables controleur -> IHM
-EtudiantServlet --> EtudiantListJsp : forward liste
-EtudiantServlet --> EtudiantFormJsp : forward ajout/modification
-
-' Associations binaires controleur -> repositories
-EtudiantServlet "1" -- "1" EtudiantRepository : CRUD etudiant
-EtudiantServlet "1" -- "1" FiliereRepository : charger filieres
-
-' Associations entre entites
-Filiere "1" -- "0..*" Etudiant : regroupe
-Etudiant "0..*" --> "1" Filiere : appartient a
-
-' Dependances metier du CRUD etudiant
-EtudiantServlet ..> Etudiant : creer / modifier
-EtudiantServlet ..> Filiere : affecter filiere
-EtudiantRepository ..> Etudiant : persister
-FiliereRepository ..> Filiere : lire pour formulaire
-
-' Dependances techniques Servlet
-EtudiantServlet ..> HttpServletRequest : lire parametres
-EtudiantServlet ..> HttpServletResponse : redirection
-EtudiantServlet ..> RequestDispatcher : forward JSP
-
-' Dependances techniques JPA
-Repository --> EntityManagerFactory : cree GestionPU
-Repository --> EntityManager : ouvre par operation
-Repository ..> EntityTransaction : commit / rollback
-Repository ..> Query : findAll
-EntityManager --> DB : INSERT / SELECT\nUPDATE / DELETE
-
-legend right
-  --|>  heritage
-  ..|>  implementation d'interface
-  --    association binaire
-  -->   association navigable
-  ..>   dependance
+legend bottom
+  --|> heritage
+  ..|> implementation
+  --> association navigable
+  ..> dependance
 endlegend
 
 @enduml
