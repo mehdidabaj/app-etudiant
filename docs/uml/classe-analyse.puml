@@ -1,0 +1,126 @@
+@startuml
+title Diagramme de classe d'analyse - App_Etudiants
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "Boundary / Presentation" {
+  boundary "Navigateur utilisateur" as Browser
+  boundary "JSP Dashboard\nindex.jsp" as DashboardView
+  boundary "JSP Etudiants\netudiants/list.jsp\netudiants/form.jsp" as EtudiantView
+  boundary "JSP Filieres\nfilieres/list.jsp\nfilieres/form.jsp" as FiliereView
+}
+
+package "Control / Servlets" {
+  control EtudiantServlet {
+    - etudiantRepository : EtudiantRepository
+    - filiereRepository : FiliereRepository
+    + doGet(request, response)
+    + doPost(request, response)
+    - listEtudiants(request, response)
+    - showAddForm(request, response)
+    - showEditForm(request, response)
+    - addEtudiant(request, response)
+    - updateEtudiant(request, response)
+    - deleteEtudiant(request, response)
+    - searchEtudiants(request, response)
+    + destroy()
+  }
+
+  control FiliereServlet {
+    - filiereRepository : FiliereRepository
+    + init()
+    + doGet(request, response)
+    + doPost(request, response)
+    - listFilieres(request, response)
+    - showAddForm(request, response)
+    - showEditForm(request, response)
+    - addFiliere(request, response)
+    - updateFiliere(request, response)
+    - deleteFiliere(request, response)
+    + destroy()
+  }
+}
+
+package "Entity / Domaine" {
+  entity Etudiant {
+    - idEtudiant : Integer
+    - nomEtudiant : String
+    - prenomEtudiant : String
+    - niveau : String
+    - filiere : Filiere
+    + getNomComplet() : String
+  }
+
+  entity Filiere {
+    - idFiliere : Integer
+    - nomFiliere : String
+    - etudiants : List<Etudiant>
+  }
+}
+
+package "Persistence / JPA" {
+  abstract class "Repository<T, ID>" as Repository {
+    # emf : EntityManagerFactory
+    # entityClass : Class<T>
+    # getEntityManager() : EntityManager
+    + save(entity : T) : T
+    + findById(id : ID) : T
+    + findAll() : List<T>
+    + update(entity : T) : T
+    + delete(id : ID) : void
+    + close() : void
+  }
+
+  class EtudiantRepository {
+    + findByName(nom : String) : List<Etudiant>
+    + findByFiliere(filiere : Filiere) : List<Etudiant>
+    + findByNameAndFiliere(nom : String, filiere : Filiere) : List<Etudiant>
+    + search(nom : String, filiere : Filiere, niveau : String) : List<Etudiant>
+  }
+
+  class FiliereRepository
+  database "Base MySQL\ndb_etudiants" as DB
+  class "EntityManager" as EntityManager
+  class "EntityManagerFactory\nGestionPU" as EntityManagerFactory
+}
+
+Browser --> EtudiantServlet : requetes HTTP\n/etudiants/*
+Browser --> FiliereServlet : requetes HTTP\n/filieres/*
+Browser --> DashboardView : GET /
+
+DashboardView ..> EtudiantRepository : statistiques
+DashboardView ..> FiliereRepository : statistiques
+
+EtudiantServlet --> EtudiantView : forward
+FiliereServlet --> FiliereView : forward
+
+EtudiantServlet --> EtudiantRepository : CRUD + recherche
+EtudiantServlet --> FiliereRepository : charger filieres
+FiliereServlet --> FiliereRepository : CRUD filiere
+
+EtudiantRepository --|> Repository
+FiliereRepository --|> Repository
+
+EtudiantRepository ..> Etudiant
+EtudiantRepository ..> Filiere
+FiliereRepository ..> Filiere
+
+Filiere "1" <-- "0..*" Etudiant : appartient a
+
+Repository --> EntityManagerFactory : cree si necessaire
+Repository --> EntityManager : ouvre par operation
+EntityManager --> DB : JPQL / transactions
+
+note right of EtudiantServlet
+  Les cas d'utilisation etudiants sont controles ici :
+  liste, formulaire, ajout, modification,
+  suppression et recherche multicritere.
+end note
+
+note right of FiliereServlet
+  Les cas d'utilisation filieres sont controles ici :
+  liste, formulaire, ajout, modification,
+  suppression.
+end note
+@enduml

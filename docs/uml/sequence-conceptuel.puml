@@ -1,0 +1,25 @@
+@startuml
+title Diagramme de sequence conceptuel - Creer un etudiant
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor "Utilisateur" as Utilisateur
+participant "Systeme de gestion\nuniversitaire" as Systeme
+participant "Catalogue des filieres" as Catalogue
+participant "Registre des etudiants" as Registre
+
+Utilisateur -> Systeme : Demander l'ajout d'un etudiant
+Systeme -> Catalogue : Charger les filieres disponibles
+Catalogue --> Systeme : Liste des filieres
+Systeme --> Utilisateur : Afficher le formulaire d'ajout
+
+Utilisateur -> Systeme : Saisir nom, prenom,\nniveau et filiere
+Systeme -> Systeme : Verifier les donnees obligatoires
+Systeme -> Catalogue : Identifier la filiere choisie
+Catalogue --> Systeme : Filiere
+Systeme -> Registre : Creer et enregistrer l'etudiant
+Registre --> Systeme : Etudiant enregistre
+Systeme --> Utilisateur : Confirmer l'ajout\net afficher la liste mise a jour
+
+@enduml
