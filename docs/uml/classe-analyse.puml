@@ -1,55 +1,137 @@
 @startuml
-title Diagramme de classe d'analyse simplifie
+title Diagramme de classe d'analyse - Architecture Servlet / JSP / JPA
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false
+skinparam packageStyle rectangle
 left to right direction
 
-class "Pages JSP" as JSP <<boundary>>
-
-class EtudiantServlet <<control>> {
-  + lister()
-  + ajouter()
-  + modifier()
-  + supprimer()
-  + rechercher()
+package "Boundary / Presentation" {
+  class "Navigateur utilisateur" as Browser <<boundary>>
+  class "index.jsp\nDashboard" as DashboardView <<boundary>>
+  class "etudiants/list.jsp" as EtudiantListView <<boundary>>
+  class "etudiants/form.jsp" as EtudiantFormView <<boundary>>
+  class "filieres/list.jsp" as FiliereListView <<boundary>>
+  class "filieres/form.jsp" as FiliereFormView <<boundary>>
 }
 
-class FiliereServlet <<control>> {
-  + lister()
-  + ajouter()
-  + modifier()
-  + supprimer()
+package "Control / Servlets" {
+  class EtudiantServlet <<control>> {
+    - etudiantRepository : EtudiantRepository
+    - filiereRepository : FiliereRepository
+    --
+    + doGet(request, response)
+    + doPost(request, response)
+    - listEtudiants(request, response)
+    - showAddForm(request, response)
+    - showEditForm(request, response)
+    - addEtudiant(request, response)
+    - updateEtudiant(request, response)
+    - deleteEtudiant(request, response)
+    - searchEtudiants(request, response)
+    + destroy()
+  }
+
+  class FiliereServlet <<control>> {
+    - filiereRepository : FiliereRepository
+    --
+    + init()
+    + doGet(request, response)
+    + doPost(request, response)
+    - listFilieres(request, response)
+    - showAddForm(request, response)
+    - showEditForm(request, response)
+    - addFiliere(request, response)
+    - updateFiliere(request, response)
+    - deleteFiliere(request, response)
+    + destroy()
+  }
 }
 
-class Etudiant <<entity>> {
-  idEtudiant
-  nomEtudiant
-  prenomEtudiant
-  niveau
+package "Entity / Domaine" {
+  class Etudiant <<entity>> {
+    - idEtudiant : Integer
+    - nomEtudiant : String
+    - prenomEtudiant : String
+    - niveau : String
+    - filiere : Filiere
+    --
+    + getNomComplet() : String
+  }
+
+  class Filiere <<entity>> {
+    - idFiliere : Integer
+    - nomFiliere : String
+    - etudiants : List<Etudiant>
+  }
 }
 
-class Filiere <<entity>> {
-  idFiliere
-  nomFiliere
+package "Persistence / JPA" {
+  abstract class "Repository<T, ID>" as Repository {
+    # emf : EntityManagerFactory
+    # entityClass : Class<T>
+    --
+    # getEntityManager() : EntityManager
+    + save(entity : T) : T
+    + findById(id : ID) : T
+    + findAll() : List<T>
+    + update(entity : T) : T
+    + delete(id : ID) : void
+    + close() : void
+  }
+
+  class EtudiantRepository <<repository>> {
+    + findByName(nom) : List<Etudiant>
+    + findByFiliere(filiere) : List<Etudiant>
+    + findByNameAndFiliere(nom, filiere) : List<Etudiant>
+    + search(nom, filiere, niveau) : List<Etudiant>
+  }
+
+  class FiliereRepository <<repository>>
+  class "EntityManagerFactory\nGestionPU" as EMF
+  class "EntityManager" as EM
+  class "MySQL\nBase db_etudiants" as DB <<database>>
 }
 
-class EtudiantRepository
-class FiliereRepository
-class "MySQL" as DB <<database>>
+Browser --> DashboardView : GET /
+Browser --> EtudiantServlet : /etudiants/*
+Browser --> FiliereServlet : /filieres/*
 
-JSP --> EtudiantServlet : /etudiants
-JSP --> FiliereServlet : /filieres
+DashboardView ..> EtudiantRepository : compter etudiants
+DashboardView ..> FiliereRepository : compter filieres
 
-EtudiantServlet --> EtudiantRepository
+EtudiantServlet --> EtudiantListView : forward liste/recherche
+EtudiantServlet --> EtudiantFormView : forward ajout/modification
+FiliereServlet --> FiliereListView : forward liste
+FiliereServlet --> FiliereFormView : forward ajout/modification
+
+EtudiantServlet --> EtudiantRepository : CRUD + recherche
 EtudiantServlet --> FiliereRepository : charger filieres
-FiliereServlet --> FiliereRepository
+FiliereServlet --> FiliereRepository : CRUD filiere
 
-EtudiantRepository --> Etudiant
-FiliereRepository --> Filiere
-Etudiant --> Filiere : appartient a
+EtudiantRepository --|> Repository
+FiliereRepository --|> Repository
 
-EtudiantRepository --> DB
-FiliereRepository --> DB
+EtudiantRepository ..> Etudiant
+EtudiantRepository ..> Filiere
+FiliereRepository ..> Filiere
+
+Filiere "1" <-- "0..*" Etudiant : appartient a
+
+Repository --> EMF : cree si besoin
+Repository --> EM : ouvre par operation
+EM --> DB : JPQL + transactions
+
+note right of EtudiantServlet
+  Routes gerees :
+  /etudiants, /add, /edit,
+  /delete et /search.
+end note
+
+note right of FiliereServlet
+  Routes gerees :
+  /filieres, /add,
+  /edit et /delete.
+end note
 
 @enduml

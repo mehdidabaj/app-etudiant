@@ -1,25 +1,111 @@
 @startuml
-title Diagramme de cas d'utilisation - Gestion des etudiants
+title Diagramme de cas d'utilisation detaille - App_Etudiants
 left to right direction
+skinparam packageStyle rectangle
 skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #EEF6FF
+  BorderColor #1E5AA8
+}
+skinparam actor {
+  BackgroundColor #FFF3D6
+  BorderColor #A66A00
+}
 
 actor "Utilisateur" as Utilisateur
+actor "SGBD MySQL" as MySQL
 
 rectangle "Application Gestion Universite" {
-  usecase "Consulter le\ntableau de bord" as UC_Dashboard
-  usecase "Gerer les\netudiants" as UC_Etudiants
-  usecase "Rechercher un\netudiant" as UC_Recherche
-  usecase "Gerer les\nfilieres" as UC_Filieres
+  package "Accueil" {
+    usecase "Consulter le\ntableau de bord" as UC_Dashboard
+    usecase "Voir statistiques\netudiants / filieres" as UC_Stats
+  }
+
+  package "Gestion des etudiants" {
+    usecase "Gerer les\netudiants" as UC_GererEtudiants
+    usecase "Lister les\netudiants" as UC_ListerEtudiants
+    usecase "Rechercher par\nnom, filiere, niveau" as UC_RechercherEtudiants
+    usecase "Afficher formulaire\nd'ajout" as UC_FormAjoutEtudiant
+    usecase "Ajouter un\netudiant" as UC_AjouterEtudiant
+    usecase "Afficher formulaire\nde modification" as UC_FormEditEtudiant
+    usecase "Modifier un\netudiant" as UC_ModifierEtudiant
+    usecase "Supprimer un\netudiant" as UC_SupprimerEtudiant
+    usecase "Choisir une\nfiliere" as UC_ChoisirFiliere
+  }
+
+  package "Gestion des filieres" {
+    usecase "Gerer les\nfilieres" as UC_GererFilieres
+    usecase "Lister les\nfilieres" as UC_ListerFilieres
+    usecase "Afficher formulaire\nd'ajout filiere" as UC_FormAjoutFiliere
+    usecase "Ajouter une\nfiliere" as UC_AjouterFiliere
+    usecase "Afficher formulaire\nde modification filiere" as UC_FormEditFiliere
+    usecase "Modifier une\nfiliere" as UC_ModifierFiliere
+    usecase "Supprimer une\nfiliere" as UC_SupprimerFiliere
+  }
+
+  package "Persistance" {
+    usecase "Lire les\ndonnees" as UC_Lire
+    usecase "Enregistrer les\nchangements" as UC_Ecrire
+  }
 }
 
 Utilisateur --> UC_Dashboard
-Utilisateur --> UC_Etudiants
-Utilisateur --> UC_Recherche
-Utilisateur --> UC_Filieres
+Utilisateur --> UC_GererEtudiants
+Utilisateur --> UC_GererFilieres
 
-note bottom of UC_Etudiants
-  Ajouter, modifier,
-  supprimer et lister.
+UC_Dashboard ..> UC_Stats : <<include>>
+UC_Stats ..> UC_Lire : <<include>>
+
+UC_GererEtudiants ..> UC_ListerEtudiants : <<include>>
+UC_GererEtudiants ..> UC_RechercherEtudiants : <<extend>>
+UC_GererEtudiants ..> UC_FormAjoutEtudiant : <<extend>>
+UC_GererEtudiants ..> UC_FormEditEtudiant : <<extend>>
+UC_GererEtudiants ..> UC_SupprimerEtudiant : <<extend>>
+
+UC_FormAjoutEtudiant ..> UC_ChoisirFiliere : <<include>>
+UC_AjouterEtudiant ..> UC_ChoisirFiliere : <<include>>
+UC_FormEditEtudiant ..> UC_ChoisirFiliere : <<include>>
+UC_ModifierEtudiant ..> UC_ChoisirFiliere : <<include>>
+
+UC_FormAjoutEtudiant ..> UC_AjouterEtudiant : soumission POST
+UC_FormEditEtudiant ..> UC_ModifierEtudiant : soumission POST
+
+UC_ListerEtudiants ..> UC_Lire : <<include>>
+UC_RechercherEtudiants ..> UC_Lire : <<include>>
+UC_ChoisirFiliere ..> UC_Lire : <<include>>
+UC_AjouterEtudiant ..> UC_Ecrire : <<include>>
+UC_ModifierEtudiant ..> UC_Ecrire : <<include>>
+UC_SupprimerEtudiant ..> UC_Ecrire : <<include>>
+
+UC_GererFilieres ..> UC_ListerFilieres : <<include>>
+UC_GererFilieres ..> UC_FormAjoutFiliere : <<extend>>
+UC_GererFilieres ..> UC_FormEditFiliere : <<extend>>
+UC_GererFilieres ..> UC_SupprimerFiliere : <<extend>>
+UC_FormAjoutFiliere ..> UC_AjouterFiliere : soumission POST
+UC_FormEditFiliere ..> UC_ModifierFiliere : soumission POST
+
+UC_ListerFilieres ..> UC_Lire : <<include>>
+UC_AjouterFiliere ..> UC_Ecrire : <<include>>
+UC_ModifierFiliere ..> UC_Ecrire : <<include>>
+UC_SupprimerFiliere ..> UC_Ecrire : <<include>>
+
+MySQL <-- UC_Lire
+MySQL <-- UC_Ecrire
+
+note right of UC_GererEtudiants
+  Routes :
+  /etudiants
+  /etudiants/add
+  /etudiants/edit
+  /etudiants/delete
+  /etudiants/search
 end note
 
+note right of UC_GererFilieres
+  Routes :
+  /filieres
+  /filieres/add
+  /filieres/edit
+  /filieres/delete
+end note
 @enduml

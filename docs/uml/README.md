@@ -2,15 +2,23 @@
 
 Ce dossier contient les diagrammes UML derives du projet Java `App_Etudiants`.
 
-## Fichiers
+## Fichiers source PlantUML
 
-- `use-case.puml` : diagramme de cas d'utilisation.
+- `use-case.puml` : diagramme de cas d'utilisation detaille.
 - `classe-conceptuel.puml` : diagramme de classe conceptuel du domaine.
-- `classe-analyse.puml` : diagramme de classe d'analyse avec boundary, control, entity et persistence.
+- `classe-analyse.puml` : diagramme de classe d'analyse avec presentation, controleurs, entites, repositories et JPA.
 - `sequence-conceptuel.puml` : sequence conceptuelle du cas "creer un etudiant".
 - `sequence-analyse.puml` : sequence d'analyse du cas "ajouter un etudiant" dans l'architecture Servlet/JPA.
 
-Les images generees correspondantes sont disponibles dans `docs/uml/images/`.
+## Images generees
+
+Les images PNG correspondantes sont disponibles dans `docs/uml/images/` :
+
+- `images/use-case.png`
+- `images/classe-conceptuel.png`
+- `images/classe-analyse.png`
+- `images/sequence-conceptuel.png`
+- `images/sequence-analyse.png`
 
 ## Generation
 

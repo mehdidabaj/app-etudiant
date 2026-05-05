@@ -1,25 +1,77 @@
 @startuml
-title Diagramme de sequence d'analyse - Ajouter un etudiant
+title Diagramme de sequence d'analyse detaille - Ajouter un etudiant
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 18
 
 actor "Utilisateur" as User
+boundary "Navigateur" as Browser
+boundary "etudiants/form.jsp" as Form
 control "EtudiantServlet" as Servlet
 entity "FiliereRepository" as FiliereRepo
 entity "EtudiantRepository" as EtudiantRepo
-database "MySQL\ndb_etudiants" as DB
+collections "Filiere" as Filiere
+collections "Etudiant" as Etudiant
+database "MySQL\n(db_etudiants)" as DB
 
-User -> Servlet : POST /etudiants/add
+== Affichage du formulaire ==
+User -> Browser : cliquer sur "Ajouter un etudiant"
+Browser -> Servlet : GET /etudiants/add
 activate Servlet
+Servlet -> FiliereRepo : findAll()
+activate FiliereRepo
+FiliereRepo -> DB : SELECT * FROM filiere
+DB --> FiliereRepo : liste des filieres
+FiliereRepo --> Servlet : List<Filiere>
+deactivate FiliereRepo
+Servlet -> Form : forward(filieres)
+Form --> Browser : formulaire avec liste des filieres
+Browser --> User : formulaire affiche
+deactivate Servlet
 
-Servlet -> Servlet : Lire les donnees du formulaire
+== Soumission du formulaire ==
+User -> Browser : saisir nom, prenom,\nniveau et filiere
+Browser -> Servlet : POST /etudiants/add
+activate Servlet
+Servlet -> Servlet : lire nom, prenom,\nniveau, filiereId
+
 Servlet -> FiliereRepo : findById(filiereId)
+activate FiliereRepo
+FiliereRepo -> DB : SELECT filiere WHERE id_filiere = ?
+DB --> FiliereRepo : ligne filiere
+FiliereRepo --> Filiere : creer objet Filiere
 FiliereRepo --> Servlet : Filiere
+deactivate FiliereRepo
 
-Servlet -> Servlet : Creer Etudiant
+Servlet -> Etudiant : new Etudiant(nom,\nprenom, niveau, filiere)
+Etudiant --> Servlet : objet Etudiant
+
 Servlet -> EtudiantRepo : save(etudiant)
-EtudiantRepo -> DB : INSERT etudiant
-EtudiantRepo --> Servlet : Etudiant
+activate EtudiantRepo
+EtudiantRepo -> DB : BEGIN transaction
+EtudiantRepo -> DB : INSERT INTO etudiant\n(nom, prenom, niveau, id_filiere)
+DB --> EtudiantRepo : id_etudiant genere
+EtudiantRepo -> DB : COMMIT
+EtudiantRepo --> Servlet : Etudiant persiste
+deactivate EtudiantRepo
 
-Servlet --> User : redirection /etudiants
+Servlet --> Browser : sendRedirect(/etudiants)
+deactivate Servlet
+
+== Retour a la liste ==
+Browser -> Servlet : GET /etudiants
+activate Servlet
+Servlet -> EtudiantRepo : findAll()
+EtudiantRepo -> DB : SELECT * FROM etudiant
+DB --> EtudiantRepo : liste etudiants
+EtudiantRepo --> Servlet : List<Etudiant>
+Servlet -> FiliereRepo : findAll()
+FiliereRepo -> DB : SELECT * FROM filiere
+DB --> FiliereRepo : liste filieres
+FiliereRepo --> Servlet : List<Filiere>
+Servlet -> Browser : forward etudiants/list.jsp
+Browser --> User : liste mise a jour
 deactivate Servlet
 
 @enduml

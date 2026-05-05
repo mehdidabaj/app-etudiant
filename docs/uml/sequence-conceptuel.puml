@@ -1,17 +1,50 @@
 @startuml
-title Diagramme de sequence conceptuel - Creer un etudiant
+title Sequence conceptuelle detaillee - Rechercher puis ajouter un etudiant
 
 skinparam shadowing false
 skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 25
+skinparam BoxPadding 10
 
 actor "Utilisateur" as Utilisateur
-participant "Systeme de gestion\nuniversitaire" as Systeme
+participant "Application Gestion Universite" as Systeme
+participant "Catalogue des filieres" as Catalogue
+participant "Registre des etudiants" as Registre
 
-Utilisateur -> Systeme : Demander l'ajout d'un etudiant
-Systeme --> Utilisateur : Afficher le formulaire d'ajout
+== Consultation initiale ==
+Utilisateur -> Systeme : Ouvrir la gestion des etudiants
+Systeme -> Registre : Demander la liste des etudiants
+Registre --> Systeme : Etudiants existants
+Systeme -> Catalogue : Demander la liste des filieres
+Catalogue --> Systeme : Filieres disponibles
+Systeme --> Utilisateur : Afficher la liste et les filtres
+
+== Recherche multicritere ==
+Utilisateur -> Systeme : Saisir criteres\n(nom, filiere, niveau)
+alt Aucun critere saisi
+  Systeme -> Registre : Lister tous les etudiants
+else Au moins un critere saisi
+  opt Filiere selectionnee
+    Systeme -> Catalogue : Identifier la filiere
+    Catalogue --> Systeme : Filiere selectionnee
+  end
+  Systeme -> Registre : Rechercher les etudiants correspondants
+end
+Registre --> Systeme : Resultats
+Systeme --> Utilisateur : Afficher la liste filtree
+
+== Ajout d'un etudiant ==
+Utilisateur -> Systeme : Demander le formulaire d'ajout
+Systeme -> Catalogue : Charger les filieres disponibles
+Catalogue --> Systeme : Liste des filieres
+Systeme --> Utilisateur : Afficher formulaire d'ajout
 
 Utilisateur -> Systeme : Saisir nom, prenom,\nniveau et filiere
-Systeme -> Systeme : Verifier et enregistrer
-Systeme --> Utilisateur : Confirmer l'ajout\net afficher la liste mise a jour
+Systeme -> Systeme : Verifier les donnees obligatoires
+Systeme -> Catalogue : Recuperer la filiere choisie
+Catalogue --> Systeme : Filiere
+Systeme -> Registre : Creer et enregistrer l'etudiant
+Registre --> Systeme : Etudiant enregistre
+Systeme --> Utilisateur : Confirmer et afficher la liste mise a jour
 
 @enduml
