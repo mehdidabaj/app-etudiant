@@ -11,7 +11,7 @@ Le perimetre presente uniquement deux modules :
 - `use-case.puml` : cas d'utilisation CRUD des etudiants et des filieres.
 - `classe-conceptuel.puml` : concepts metier Etudiant, Filiere et Niveau.
 - `classe-analyse.puml` : presentation, controleurs, entites, repositories et base MySQL limites au CRUD.
-- `classe-technique.puml` : diagramme de classe technique avec IHM, controleurs, entites, classe abstraite, interfaces et dependances JPA/Servlet.
+- `classe-technique.puml` : diagramme de classe technique limite a une seule fonctionnalite, le CRUD etudiant.
 - `sequence-conceptuel.puml` : sequence conceptuelle d'un cycle CRUD.
 - `sequence-analyse.puml` : sequence d'analyse du CRUD etudiant dans l'architecture Servlet/JPA.
 
