@@ -1,5 +1,5 @@
 @startuml
-title Diagramme de cas d'utilisation detaille - App_Etudiants
+title Cas d'utilisation - CRUD etudiants et CRUD filieres
 left to right direction
 skinparam packageStyle rectangle
 skinparam shadowing false
@@ -16,29 +16,19 @@ actor "Utilisateur" as Utilisateur
 actor "SGBD MySQL" as MySQL
 
 rectangle "Application Gestion Universite" {
-  package "Accueil" {
-    usecase "Consulter le\ntableau de bord" as UC_Dashboard
-    usecase "Voir statistiques\netudiants / filieres" as UC_Stats
-  }
-
-  package "Gestion des etudiants" {
+  package "Gestion des etudiants (CRUD)" {
     usecase "Gerer les\netudiants" as UC_GererEtudiants
     usecase "Lister les\netudiants" as UC_ListerEtudiants
-    usecase "Rechercher par\nnom, filiere, niveau" as UC_RechercherEtudiants
-    usecase "Afficher formulaire\nd'ajout" as UC_FormAjoutEtudiant
     usecase "Ajouter un\netudiant" as UC_AjouterEtudiant
-    usecase "Afficher formulaire\nde modification" as UC_FormEditEtudiant
     usecase "Modifier un\netudiant" as UC_ModifierEtudiant
     usecase "Supprimer un\netudiant" as UC_SupprimerEtudiant
     usecase "Choisir une\nfiliere" as UC_ChoisirFiliere
   }
 
-  package "Gestion des filieres" {
+  package "Gestion des filieres (CRUD)" {
     usecase "Gerer les\nfilieres" as UC_GererFilieres
     usecase "Lister les\nfilieres" as UC_ListerFilieres
-    usecase "Afficher formulaire\nd'ajout filiere" as UC_FormAjoutFiliere
     usecase "Ajouter une\nfiliere" as UC_AjouterFiliere
-    usecase "Afficher formulaire\nde modification filiere" as UC_FormEditFiliere
     usecase "Modifier une\nfiliere" as UC_ModifierFiliere
     usecase "Supprimer une\nfiliere" as UC_SupprimerFiliere
   }
@@ -49,40 +39,27 @@ rectangle "Application Gestion Universite" {
   }
 }
 
-Utilisateur --> UC_Dashboard
 Utilisateur --> UC_GererEtudiants
 Utilisateur --> UC_GererFilieres
 
-UC_Dashboard ..> UC_Stats : <<include>>
-UC_Stats ..> UC_Lire : <<include>>
-
 UC_GererEtudiants ..> UC_ListerEtudiants : <<include>>
-UC_GererEtudiants ..> UC_RechercherEtudiants : <<extend>>
-UC_GererEtudiants ..> UC_FormAjoutEtudiant : <<extend>>
-UC_GererEtudiants ..> UC_FormEditEtudiant : <<extend>>
+UC_GererEtudiants ..> UC_AjouterEtudiant : <<extend>>
+UC_GererEtudiants ..> UC_ModifierEtudiant : <<extend>>
 UC_GererEtudiants ..> UC_SupprimerEtudiant : <<extend>>
 
-UC_FormAjoutEtudiant ..> UC_ChoisirFiliere : <<include>>
 UC_AjouterEtudiant ..> UC_ChoisirFiliere : <<include>>
-UC_FormEditEtudiant ..> UC_ChoisirFiliere : <<include>>
 UC_ModifierEtudiant ..> UC_ChoisirFiliere : <<include>>
 
-UC_FormAjoutEtudiant ..> UC_AjouterEtudiant : soumission POST
-UC_FormEditEtudiant ..> UC_ModifierEtudiant : soumission POST
-
 UC_ListerEtudiants ..> UC_Lire : <<include>>
-UC_RechercherEtudiants ..> UC_Lire : <<include>>
 UC_ChoisirFiliere ..> UC_Lire : <<include>>
 UC_AjouterEtudiant ..> UC_Ecrire : <<include>>
 UC_ModifierEtudiant ..> UC_Ecrire : <<include>>
 UC_SupprimerEtudiant ..> UC_Ecrire : <<include>>
 
 UC_GererFilieres ..> UC_ListerFilieres : <<include>>
-UC_GererFilieres ..> UC_FormAjoutFiliere : <<extend>>
-UC_GererFilieres ..> UC_FormEditFiliere : <<extend>>
+UC_GererFilieres ..> UC_AjouterFiliere : <<extend>>
+UC_GererFilieres ..> UC_ModifierFiliere : <<extend>>
 UC_GererFilieres ..> UC_SupprimerFiliere : <<extend>>
-UC_FormAjoutFiliere ..> UC_AjouterFiliere : soumission POST
-UC_FormEditFiliere ..> UC_ModifierFiliere : soumission POST
 
 UC_ListerFilieres ..> UC_Lire : <<include>>
 UC_AjouterFiliere ..> UC_Ecrire : <<include>>
@@ -93,19 +70,22 @@ MySQL <-- UC_Lire
 MySQL <-- UC_Ecrire
 
 note right of UC_GererEtudiants
-  Routes :
-  /etudiants
-  /etudiants/add
-  /etudiants/edit
-  /etudiants/delete
-  /etudiants/search
+  Routes CRUD :
+  GET  /etudiants
+  GET  /etudiants/add
+  POST /etudiants/add
+  GET  /etudiants/edit?id=...
+  POST /etudiants/edit
+  GET  /etudiants/delete?id=...
 end note
 
 note right of UC_GererFilieres
-  Routes :
-  /filieres
-  /filieres/add
-  /filieres/edit
-  /filieres/delete
+  Routes CRUD :
+  GET  /filieres
+  GET  /filieres/add
+  POST /filieres/add
+  GET  /filieres/edit?id=...
+  POST /filieres/edit
+  GET  /filieres/delete?id=...
 end note
 @enduml

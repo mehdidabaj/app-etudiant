@@ -1,5 +1,5 @@
 @startuml
-title Diagramme de classe conceptuel - Domaine universitaire
+title Diagramme de classe conceptuel - CRUD Etudiants et Filieres
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false
@@ -14,8 +14,6 @@ class Etudiant <<concept>> {
   nom
   prenom
   niveau
-  --
-  nom complet
 }
 
 class Filiere <<concept>> {
@@ -23,37 +21,35 @@ class Filiere <<concept>> {
   nom
 }
 
-class Niveau <<valeur>> {
-  Licence 1
-  Licence 2
-  Licence 3
-  Master 1
-  Master 2
+class "CRUD Etudiant" as CrudEtudiant <<processus>> {
+  creer etudiant
+  consulter etudiants
+  modifier etudiant
+  supprimer etudiant
 }
 
-class CatalogueFilieres <<concept>> {
-  filieres disponibles
+class "CRUD Filiere" as CrudFiliere <<processus>> {
+  creer filiere
+  consulter filieres
+  modifier filiere
+  supprimer filiere
 }
 
-class RegistreEtudiants <<concept>> {
-  etudiants inscrits
-}
+Filiere "1" -- "0..*" Etudiant : contient
+Etudiant "0..*" -- "1" Filiere : appartient a
 
-RegistreEtudiants "1" o-- "0..*" Etudiant : recense
-CatalogueFilieres "1" o-- "0..*" Filiere : propose
-Filiere "1" -- "0..*" Etudiant : regroupe
-Etudiant "1" -- "1" Niveau : suit
+CrudEtudiant ..> Etudiant : manipule
+CrudEtudiant ..> Filiere : selectionne
+CrudFiliere ..> Filiere : manipule
 
 note right of Etudiant
-  Les attributs nom et prenom
-  sont obligatoires dans l'entite JPA.
-  Le niveau est choisi dans le formulaire.
+  Informations gerees :
+  nom, prenom, niveau et filiere.
 end note
 
 note bottom of Filiere
-  Une filiere peut exister sans etudiant.
-  Un etudiant est rattache a une filiere
-  lors de l'ajout ou de la modification.
+  Une filiere peut etre creee,
+  consultee, modifiee ou supprimee.
 end note
 
 @enduml

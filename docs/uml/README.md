@@ -1,14 +1,18 @@
 # Diagrammes UML - App_Etudiants
 
 Ce dossier contient les diagrammes UML derives du projet Java `App_Etudiants`.
+Le perimetre presente uniquement deux modules :
+
+- gestion des etudiants en CRUD ;
+- gestion des filieres en CRUD.
 
 ## Fichiers source PlantUML
 
-- `use-case.puml` : diagramme de cas d'utilisation detaille.
-- `classe-conceptuel.puml` : diagramme de classe conceptuel du domaine.
-- `classe-analyse.puml` : diagramme de classe d'analyse avec presentation, controleurs, entites, repositories et JPA.
-- `sequence-conceptuel.puml` : sequence conceptuelle du cas "creer un etudiant".
-- `sequence-analyse.puml` : sequence d'analyse du cas "ajouter un etudiant" dans l'architecture Servlet/JPA.
+- `use-case.puml` : cas d'utilisation CRUD des etudiants et des filieres.
+- `classe-conceptuel.puml` : concepts metier Etudiant, Filiere et Niveau.
+- `classe-analyse.puml` : presentation, controleurs, entites, repositories et base MySQL limites au CRUD.
+- `sequence-conceptuel.puml` : sequence conceptuelle d'un cycle CRUD.
+- `sequence-analyse.puml` : sequence d'analyse du CRUD etudiant dans l'architecture Servlet/JPA.
 
 ## Images generees
 

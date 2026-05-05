@@ -1,14 +1,13 @@
 @startuml
-title Diagramme de classe d'analyse - Architecture Servlet / JSP / JPA
+title Diagramme de classe d'analyse - CRUD Etudiants et Filieres
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam packageStyle rectangle
 left to right direction
 
-package "Boundary / Presentation" {
+package "Boundary / Pages JSP" {
   class "Navigateur utilisateur" as Browser <<boundary>>
-  class "index.jsp\nDashboard" as DashboardView <<boundary>>
   class "etudiants/list.jsp" as EtudiantListView <<boundary>>
   class "etudiants/form.jsp" as EtudiantFormView <<boundary>>
   class "filieres/list.jsp" as FiliereListView <<boundary>>
@@ -28,7 +27,6 @@ package "Control / Servlets" {
     - addEtudiant(request, response)
     - updateEtudiant(request, response)
     - deleteEtudiant(request, response)
-    - searchEtudiants(request, response)
     + destroy()
   }
 
@@ -80,34 +78,24 @@ package "Persistence / JPA" {
     + close() : void
   }
 
-  class EtudiantRepository <<repository>> {
-    + findByName(nom) : List<Etudiant>
-    + findByFiliere(filiere) : List<Etudiant>
-    + findByNameAndFiliere(nom, filiere) : List<Etudiant>
-    + search(nom, filiere, niveau) : List<Etudiant>
-  }
-
+  class EtudiantRepository <<repository>>
   class FiliereRepository <<repository>>
   class "EntityManagerFactory\nGestionPU" as EMF
   class "EntityManager" as EM
   class "MySQL\nBase db_etudiants" as DB <<database>>
 }
 
-Browser --> DashboardView : GET /
-Browser --> EtudiantServlet : /etudiants/*
-Browser --> FiliereServlet : /filieres/*
+Browser --> EtudiantServlet : CRUD etudiants\n/etudiants/*
+Browser --> FiliereServlet : CRUD filieres\n/filieres/*
 
-DashboardView ..> EtudiantRepository : compter etudiants
-DashboardView ..> FiliereRepository : compter filieres
+EtudiantServlet --> EtudiantListView : afficher liste
+EtudiantServlet --> EtudiantFormView : formulaire ajout/modification
+FiliereServlet --> FiliereListView : afficher liste
+FiliereServlet --> FiliereFormView : formulaire ajout/modification
 
-EtudiantServlet --> EtudiantListView : forward liste/recherche
-EtudiantServlet --> EtudiantFormView : forward ajout/modification
-FiliereServlet --> FiliereListView : forward liste
-FiliereServlet --> FiliereFormView : forward ajout/modification
-
-EtudiantServlet --> EtudiantRepository : CRUD + recherche
-EtudiantServlet --> FiliereRepository : charger filieres
-FiliereServlet --> FiliereRepository : CRUD filiere
+EtudiantServlet --> EtudiantRepository : save, findById,\nfindAll, update, delete
+EtudiantServlet --> FiliereRepository : charger filieres\npour ajout/modification
+FiliereServlet --> FiliereRepository : save, findById,\nfindAll, update, delete
 
 EtudiantRepository --|> Repository
 FiliereRepository --|> Repository
@@ -120,18 +108,22 @@ Filiere "1" <-- "0..*" Etudiant : appartient a
 
 Repository --> EMF : cree si besoin
 Repository --> EM : ouvre par operation
-EM --> DB : JPQL + transactions
+EM --> DB : transactions CRUD
 
 note right of EtudiantServlet
-  Routes gerees :
-  /etudiants, /add, /edit,
-  /delete et /search.
+  Routes CRUD etudiants :
+  /etudiants
+  /etudiants/add
+  /etudiants/edit
+  /etudiants/delete
 end note
 
 note right of FiliereServlet
-  Routes gerees :
-  /filieres, /add,
-  /edit et /delete.
+  Routes CRUD filieres :
+  /filieres
+  /filieres/add
+  /filieres/edit
+  /filieres/delete
 end note
 
 @enduml
