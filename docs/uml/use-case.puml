@@ -1,0 +1,35 @@
+@startuml
+title Cas d'utilisation - CRUD Etudiant
+left to right direction
+skinparam shadowing false
+
+actor "Utilisateur" as User
+actor "MySQL" as DB
+
+rectangle "Gestion des etudiants" {
+  usecase "Lister les\netudiants" as Lister
+  usecase "Ajouter un\netudiant" as Ajouter
+  usecase "Modifier un\netudiant" as Modifier
+  usecase "Supprimer un\netudiant" as Supprimer
+  usecase "Choisir une\nfiliere" as ChoisirFiliere
+}
+
+User --> Lister
+User --> Ajouter
+User --> Modifier
+User --> Supprimer
+
+Ajouter ..> ChoisirFiliere : <<include>>
+Modifier ..> ChoisirFiliere : <<include>>
+
+Lister --> DB : lire
+Ajouter --> DB : inserer
+Modifier --> DB : mettre a jour
+Supprimer --> DB : supprimer
+ChoisirFiliere --> DB : lire filieres
+
+note bottom
+  Fonctionnalite representee :
+  CRUD Etudiant uniquement.
+end note
+@enduml

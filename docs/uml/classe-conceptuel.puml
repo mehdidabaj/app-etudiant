@@ -1,0 +1,31 @@
+@startuml
+title Classe conceptuelle - CRUD Etudiant
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class Etudiant <<concept>> {
+  identifiant
+  nom
+  prenom
+  niveau
+}
+
+class Filiere <<concept>> {
+  identifiant
+  nom
+}
+
+class "CRUD Etudiant" as CrudEtudiant <<processus>> {
+  lister
+  ajouter
+  modifier
+  supprimer
+}
+
+CrudEtudiant ..> Etudiant : gere
+CrudEtudiant ..> Filiere : choisit
+Filiere "1" -- "0..*" Etudiant : regroupe
+Etudiant "0..*" --> "1" Filiere : appartient a
+
+@enduml

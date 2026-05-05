@@ -1,0 +1,68 @@
+@startuml
+title Classe technique simplifiee - CRUD Etudiant
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+class "Pages JSP\n<<boundary>>" as JSP {
+  etudiants/list.jsp
+  etudiants/form.jsp
+}
+
+class EtudiantServlet <<control>> {
+  + lister()
+  + ajouter()
+  + modifier()
+  + supprimer()
+}
+
+class Etudiant <<entity>> {
+  idEtudiant : Integer
+  nomEtudiant : String
+  prenomEtudiant : String
+  niveau : String
+}
+
+class Filiere <<entity>> {
+  idFiliere : Integer
+  nomFiliere : String
+}
+
+abstract class "Repository<T, ID>" as Repository {
+  + save(entity)
+  + findById(id)
+  + findAll()
+  + update(entity)
+  + delete(id)
+}
+
+class EtudiantRepository
+class FiliereRepository
+class HttpServlet
+interface Servlet
+class "JPA / EntityManager" as JPA
+class "MySQL" as DB <<database>>
+
+EtudiantServlet --|> HttpServlet
+HttpServlet ..|> Servlet
+EtudiantRepository --|> Repository
+FiliereRepository --|> Repository
+
+JSP --> EtudiantServlet : actions CRUD
+EtudiantServlet --> EtudiantRepository : CRUD etudiant
+EtudiantServlet --> FiliereRepository : choisir filiere
+EtudiantRepository ..> Etudiant
+FiliereRepository ..> Filiere
+Etudiant --> Filiere : appartient a
+Repository --> JPA
+JPA --> DB
+
+legend bottom
+  --|> heritage
+  ..|> implementation
+  --> association navigable
+  ..> dependance
+endlegend
+
+@enduml

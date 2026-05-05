@@ -1,0 +1,45 @@
+@startuml
+title Classe d'analyse - Fonctionnalite CRUD Etudiant
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+class "Pages JSP\nliste + formulaire" as JSP <<boundary>>
+
+class EtudiantServlet <<control>> {
+  + lister()
+  + ajouter()
+  + modifier()
+  + supprimer()
+}
+
+class Etudiant <<entity>> {
+  idEtudiant
+  nomEtudiant
+  prenomEtudiant
+  niveau
+}
+
+class Filiere <<entity>> {
+  idFiliere
+  nomFiliere
+}
+
+class EtudiantRepository <<repository>>
+class FiliereRepository <<repository>>
+class "MySQL" as DB <<database>>
+
+JSP --> EtudiantServlet : actions CRUD
+EtudiantServlet --> JSP : afficher resultat
+EtudiantServlet --> EtudiantRepository : CRUD Etudiant
+EtudiantServlet --> FiliereRepository : charger filieres
+
+EtudiantRepository --> Etudiant
+FiliereRepository --> Filiere
+Etudiant --> Filiere : appartient a
+
+EtudiantRepository --> DB
+FiliereRepository --> DB
+
+@enduml

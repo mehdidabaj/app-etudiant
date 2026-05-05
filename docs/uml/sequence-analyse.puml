@@ -1,0 +1,51 @@
+@startuml
+title Sequence d'analyse simplifiee - CRUD Etudiant
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 16
+
+actor "Utilisateur" as User
+boundary "Navigateur" as Browser
+control "EtudiantServlet" as Servlet
+entity "EtudiantRepository" as EtudiantRepo
+entity "FiliereRepository" as FiliereRepo
+database "MySQL" as DB
+
+== Lister ==
+User -> Browser : ouvrir /etudiants
+Browser -> Servlet : GET /etudiants
+Servlet -> EtudiantRepo : findAll()
+EtudiantRepo -> DB : SELECT etudiants
+DB --> EtudiantRepo : etudiants
+Servlet -> FiliereRepo : findAll()
+FiliereRepo -> DB : SELECT filieres
+DB --> FiliereRepo : filieres
+Servlet --> Browser : etudiants/list.jsp
+
+== Ajouter ==
+User -> Browser : saisir un etudiant
+Browser -> Servlet : POST /etudiants/add
+Servlet -> FiliereRepo : findById(filiereId)
+FiliereRepo --> Servlet : Filiere
+Servlet -> EtudiantRepo : save(etudiant)
+EtudiantRepo -> DB : INSERT etudiant
+Servlet --> Browser : redirect /etudiants
+
+== Modifier ==
+User -> Browser : modifier un etudiant
+Browser -> Servlet : POST /etudiants/edit
+Servlet -> EtudiantRepo : findById(id)
+Servlet -> FiliereRepo : findById(filiereId)
+Servlet -> EtudiantRepo : update(etudiant)
+EtudiantRepo -> DB : UPDATE etudiant
+Servlet --> Browser : redirect /etudiants
+
+== Supprimer ==
+User -> Browser : supprimer un etudiant
+Browser -> Servlet : GET /etudiants/delete?id=...
+Servlet -> EtudiantRepo : delete(id)
+EtudiantRepo -> DB : DELETE etudiant
+Servlet --> Browser : redirect /etudiants
+
+@enduml

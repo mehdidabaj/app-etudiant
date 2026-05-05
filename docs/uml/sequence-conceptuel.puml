@@ -1,0 +1,34 @@
+@startuml
+title Sequence conceptuelle simple - CRUD Etudiant
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor "Utilisateur" as U
+participant "Application" as App
+participant "Etudiants" as E
+participant "Filieres" as F
+
+U -> App : Consulter la liste
+App -> E : lister()
+E --> App : etudiants
+App --> U : afficher liste
+
+U -> App : Ajouter etudiant\n(nom, prenom, niveau, filiere)
+App -> F : verifier filiere
+F --> App : filiere
+App -> E : creer(etudiant)
+E --> App : etudiant cree
+App --> U : liste mise a jour
+
+U -> App : Modifier etudiant
+App -> E : modifier(etudiant)
+E --> App : etudiant modifie
+App --> U : confirmation
+
+U -> App : Supprimer etudiant
+App -> E : supprimer(id)
+E --> App : suppression OK
+App --> U : liste mise a jour
+
+@enduml
